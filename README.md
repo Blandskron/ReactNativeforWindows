@@ -1,79 +1,86 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Configuración del Ambiente para Desarrollar una App con React Native for Windows
 
-# Getting Started
+Este documento explica cómo preparar el entorno de desarrollo para una aplicación utilizando React Native for Windows.
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+## Requisitos
 
-## Step 1: Start the Metro Server
+- **Node.js** (versión LTS)
+- **React Native CLI**
+- **Visual Studio** (Community Edition o superior)
+- **Chocolatey** (opcional)
+- **Windows 10 SDK**
+- **Python2 y JDK8**
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+## Pasos de Configuración
 
-To start Metro, run the following command from the _root_ of your React Native project:
-
-```bash
-# using npm
-npm start
-
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Start your Application
-
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
-
-### For Android
+### 1. **Instalar Node.js**
+React Native requiere Node.js para gestionar los paquetes. Puedes descargar la última versión LTS desde [aquí](https://nodejs.org/). Después de instalarlo, verifica la instalación ejecutando los siguientes comandos en la terminal:
 
 ```bash
-# using npm
-npm run android
-
-# OR using Yarn
-yarn android
+node -v
+npm -v
 ```
 
-### For iOS
+### 2. **Instalar el CLI de React Native**
+Instala el CLI de React Native de manera global en tu sistema:
 
 ```bash
-# using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+npm install -g react-native-cli
 ```
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+### 3. **Instalar Visual Studio**
+React Native for Windows requiere Visual Studio para compilar el código nativo. Descarga la versión "Community" o superior desde [aquí](https://visualstudio.microsoft.com/downloads/).
 
-This is one way to run your app â€” you can also run it directly from within Android Studio and Xcode respectively.
+Durante la instalación, asegúrate de seleccionar los siguientes componentes:
+- **C++ Universal Windows Platform (UWP) development**
+- **Windows 10 SDK**
+- **MSBuild**
 
-## Step 3: Modifying your App
+### 4. **Instalar Chocolatey (opcional)**
+Chocolatey es un gestor de paquetes para Windows que facilita la instalación de dependencias. Ejecuta el siguiente comando en PowerShell como administrador:
 
-Now that you have successfully run the app, let's modify it.
+```bash
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+```
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd âŒ˜</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+### 5. **Instalar las dependencias para Windows**
+Con Chocolatey instalado, puedes usarlo para instalar Python2 y JDK8, que son necesarios para el desarrollo con React Native for Windows:
 
-   For **iOS**: Hit <kbd>Cmd âŒ˜</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+```bash
+choco install -y python2 jdk8
+```
 
-## Congratulations! :tada:
+### 6. **Configurar React Native for Windows**
+Ejecuta el siguiente comando para crear tu primer proyecto React Native:
 
-You've successfully run and modified your React Native App. :partying_face:
+```bash
+npx react-native init MyFirstApp
+```
 
-### Now what?
+Una vez creado el proyecto, navega a la carpeta del proyecto:
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
+```bash
+cd MyFirstApp
+```
 
-# Troubleshooting
+Para agregar soporte para Windows, ejecuta:
 
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+```bash
+npx react-native-windows-init --overwrite
+```
 
-# Learn More
+### 7. **Compilar y ejecutar la aplicación en Windows**
+Si todo está configurado correctamente, puedes compilar y ejecutar la aplicación en Windows con el siguiente comando:
 
-To learn more about React Native, take a look at the following resources:
+```bash
+npx react-native run-windows
+```
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## Herramientas adicionales
+
+- **Visual Studio Code (VS Code)**: Recomendado para la edición de código en JavaScript y TypeScript. Puedes descargarlo desde [aquí](https://code.visualstudio.com/).
+- **React Native Tools para VS Code**: Instala la extensión de React Native desde el Marketplace de VS Code para mejorar la experiencia de desarrollo.
+
+## Referencias
+
+Para más detalles sobre la configuración y el desarrollo con React Native for Windows, visita la [documentación oficial](https://microsoft.github.io/react-native-windows/docs/getting-started).
