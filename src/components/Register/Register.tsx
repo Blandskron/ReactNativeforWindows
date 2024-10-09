@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 
 const Register = ({ navigation }: { navigation: any }) => {
     const [username, setUsername] = useState('');
@@ -44,38 +44,71 @@ const Register = ({ navigation }: { navigation: any }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Registro</Text>
-            <TextInput
-                style={[styles.input, isUsernameFocused ? styles.inputFocused : null]}
-                placeholder="Username"
-                placeholderTextColor="#666"
-                value={username}
-                onChangeText={setUsername}
-                onFocus={() => setIsUsernameFocused(true)}
-                onBlur={() => setIsUsernameFocused(false)}
-            />
-            <TextInput
-                style={[styles.input, isPasswordFocused ? styles.inputFocused : null]}
-                placeholder="Password"
-                secureTextEntry={true}
-                placeholderTextColor="#666"
-                value={password}
-                onChangeText={setPassword}
-                onFocus={() => setIsPasswordFocused(true)}
-                onBlur={() => setIsPasswordFocused(false)}
-            />
-            <TextInput
-                style={[styles.input, isEmailFocused ? styles.inputFocused : null]}
-                placeholder="Email"
-                placeholderTextColor="#666"
-                value={email}
-                onChangeText={setEmail}
-                onFocus={() => setIsEmailFocused(true)}
-                onBlur={() => setIsEmailFocused(false)}
-            />
-            <TouchableOpacity style={styles.button} onPress={handleRegister}>
-                <Text style={styles.buttonText}>Registrar</Text>
-            </TouchableOpacity>
+            <View style={styles.leftPanel}>
+                <Image source={require('../../assets/microsoft.svg')} style={styles.logo} />
+                <Text style={styles.companyName}>Ilis Solutions</Text>
+                <Text style={styles.mission}>
+                    Únete a nuestra comunidad de soluciones tecnológicas, registrándote hoy mismo.
+                </Text>
+            </View>
+            <View style={styles.rightPanel}>
+                <Text style={styles.welcomeTitle}>Create Account</Text>
+                <Text style={styles.companySubtitle}>Join Our Community</Text>
+                <Text style={styles.registerTitle}>Register</Text>
+
+                <View style={styles.inputContainer}>
+                    <Image source={require('../../assets/user.svg')} style={styles.inputIcon} />
+                    <TextInput
+                        style={[styles.input, isUsernameFocused ? styles.inputFocused : null]}
+                        placeholder="Username"
+                        placeholderTextColor="#666"
+                        value={username}
+                        onChangeText={setUsername}
+                        onFocus={() => setIsUsernameFocused(true)}
+                        onBlur={() => setIsUsernameFocused(false)}
+                    />
+                </View>
+
+                <View style={styles.inputContainer}>
+                    <Image source={require('../../assets/envelope.svg')} style={styles.inputIcon} />
+                    <TextInput
+                        style={[styles.input, isEmailFocused ? styles.inputFocused : null]}
+                        placeholder="Email"
+                        placeholderTextColor="#666"
+                        value={email}
+                        onChangeText={setEmail}
+                        onFocus={() => setIsEmailFocused(true)}
+                        onBlur={() => setIsEmailFocused(false)}
+                    />
+                </View>
+
+                <View style={styles.inputContainer}>
+                    <Image source={require('../../assets/key.svg')} style={styles.inputIcon} />
+                    <TextInput
+                        style={[styles.input, isPasswordFocused ? styles.inputFocused : null]}
+                        placeholder="Password"
+                        secureTextEntry={true}
+                        placeholderTextColor="#666"
+                        value={password}
+                        onChangeText={setPassword}
+                        onFocus={() => setIsPasswordFocused(true)}
+                        onBlur={() => setIsPasswordFocused(false)}
+                    />
+                </View>
+
+                <TouchableOpacity style={styles.button} onPress={handleRegister}>
+                    <Text style={styles.buttonText}>Register</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={styles.link}
+                    onPress={() => navigation.navigate('Login')}
+                >
+                    <Text style={styles.registerLink}>¿Ya tienes una cuenta? Inicia sesión aquí</Text>
+                </TouchableOpacity>
+
+                <Text style={styles.developedBy}>Desarrollado por Ilis Tecnologia</Text>
+            </View>
         </View>
     );
 };
@@ -83,26 +116,79 @@ const Register = ({ navigation }: { navigation: any }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        flexDirection: 'row',
+    },
+    leftPanel: {
+        flex: 3,
+        backgroundColor: '#007BFF',
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
     },
-    title: {
+    rightPanel: {
+        flex: 2,
+        backgroundColor: '#e7ebda',
+        justifyContent: 'center',
+        padding: 20,
+    },
+    logo: {
+        width: 100,
+        height: 100,
+        marginBottom: 20,
+    },
+    companyName: {
+        fontSize: 24,
+        color: '#fff',
+        marginBottom: 20,
+        fontWeight: 'bold',
+    },
+    mission: {
+        color: '#fff',
+        fontSize: 14,
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    welcomeTitle: {
+        fontSize: 36,
+        fontWeight: 'bold',
+        color: '#333',
+        textAlign: 'center',
+    },
+    companySubtitle: {
+        fontSize: 18,
+        fontWeight: '300',
+        color: '#666',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    registerTitle: {
         fontSize: 24,
         marginBottom: 20,
         fontWeight: 'bold',
-        color: '#888',
+        color: '#333',
     },
-    input: {
-        width: 250,
-        height: 25,
-        backgroundColor: '#ffffff',
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
         borderColor: '#e7ebda',
         borderWidth: 1,
-        marginBottom: 20,
+        borderRadius: 50,
+        margin: 5,
+        backgroundColor: '#ffffff',
+        textAlign: 'center',
+    },
+    inputIcon: {
+        width: 20,
+        height: 20,
+        marginLeft: 20,
+        marginRight: 10,
+    },
+    input: {
+        flex: 1,
+        height: 40,
         paddingHorizontal: 10,
-        borderRadius: 5,
         color: '#000',
+        backgroundColor: '#ffffff',
     },
     inputFocused: {
         backgroundColor: '#f0f8ff',
@@ -113,11 +199,32 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         borderRadius: 5,
         alignItems: 'center',
+        textAlign: 'center',
+        width: 250,
+        alignSelf: 'center',
     },
     buttonText: {
         fontSize: 16,
         fontWeight: 'bold',
         color: '#fff',
+    },
+    footerText: {
+        marginTop: 20,
+        fontSize: 14,
+        textAlign: 'center',
+    },
+    link: {
+        marginTop: 50,
+    },
+    registerLink: {
+        color: '#007BFF',
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    developedBy: {
+        marginTop: 20,
+        textAlign: 'center',
+        color: '#666',
     },
 });
 
