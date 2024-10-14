@@ -3,6 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
 
+import CustomText from './src/components/Text/Text';
+
 import Login from './src/components/Login/Login';
 import Home from './src/components/Home/Home';
 import Register from './src/components/Register/Register';
@@ -48,12 +50,16 @@ function App() {
 
 const WelcomeScreen = ({ navigation }) => (
     <View style={styles.container}>
-        <Text style={styles.text}>Bienvenido al Olimpo de los Dioses</Text>
+        <CustomText style={styles.text}>
+            Bienvenido al Olimpo de los Dioses
+        </CustomText>
         <TouchableOpacity
             style={styles.button}
             onPress={() => navigation.navigate('Login')}
         >
-            <Text style={styles.buttonText}>¿Tienes cuenta? Inicia sesión</Text>
+            <CustomText style={styles.buttonText}>
+                ¿Tienes cuenta? Inicia sesión
+            </CustomText>
         </TouchableOpacity>
         <TouchableOpacity
             style={styles.button}

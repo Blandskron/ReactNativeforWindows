@@ -1,0 +1,30 @@
+# EditorConfig ayuda a mantener estilos de código consistentes para múltiples desarrolladores
+# que utilizan diferentes editores y entornos IDE.
+
+# Marca que este es el archivo raíz
+root = true
+
+# Aplicar configuraciones a todos los archivos
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 2
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Configuraciones para archivos JavaScript
+[*.js]
+indent_size = 2
+
+# Configuraciones para archivos JSON
+[*.json]
+indent_size = 2
+
+# Configuraciones para archivos de react-native
+[*.jsx]
+indent_size = 2
+
+# Configuraciones para archivos CSS (si los tienes)
+[*.css]
+indent_size = 2

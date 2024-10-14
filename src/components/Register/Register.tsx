@@ -118,6 +118,11 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
     },
+    textoEspecial: {
+        fontFamily: 'Poppins-Regular',
+        fontSize: 18,
+        color: '#333',
+    },
     leftPanel: {
         flex: 3,
         backgroundColor: '#007BFF',

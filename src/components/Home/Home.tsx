@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Modal, Platform } from 'react-native';
 import { fetchUsers, createUser, updateUser, deleteUser } from '../../utils/api';
 
-
 const Home = () => {
+    // Aquí mantenemos el estado y la lógica como antes
     const [formData, setFormData] = useState({
         rut: '',
         nombres: '',
@@ -11,9 +11,10 @@ const Home = () => {
         apellido_m: '',
         direccion: '',
     });
-
     const [users, setUsers] = useState([]);
     const [selectedId, setSelectedId] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
+    const [action, setAction] = useState('');
 
     useEffect(() => {
         loadUsers();
@@ -26,6 +27,34 @@ const Home = () => {
         } catch (error) {
             console.error('Error loading users:', error);
         }
+    };
+
+    const handleShowModal = (actionType, user) => {
+        setAction(actionType);
+        if (user) {
+            setSelectedId(user.id);
+            setFormData({
+                rut: user.rut,
+                nombres: user.nombres,
+                apellido_p: user.apellido_p,
+                apellido_m: user.apellido_m,
+                direccion: user.direccion,
+            });
+        } else {
+            clearForm();
+        }
+        setModalVisible(true);
+    };
+
+    const handleConfirm = () => {
+        if (action === 'create') {
+            handleCreate();
+        } else if (action === 'update') {
+            handleUpdate();
+        } else if (action === 'delete') {
+            handleDelete();
+        }
+        setModalVisible(false);
     };
 
     const handleCreate = async () => {
@@ -68,53 +97,12 @@ const Home = () => {
     return (
         <View style={styles.container}>
             <ScrollView style={styles.main}>
-                <View style={styles.formSection}>
-                    <Text style={styles.sectionTitle}>Formulario de Cliente</Text>
-                    <TextInput
-                        placeholder="Rut"
-                        style={styles.input}
-                        value={formData.rut}
-                        onChangeText={(text) => setFormData({ ...formData, rut: text })}
-                    />
-                    <TextInput
-                        placeholder="Nombres"
-                        style={styles.input}
-                        value={formData.nombres}
-                        onChangeText={(text) => setFormData({ ...formData, nombres: text })}
-                    />
-                    <TextInput
-                        placeholder="Apellido P."
-                        style={styles.input}
-                        value={formData.apellido_p}
-                        onChangeText={(text) => setFormData({ ...formData, apellido_p: text })}
-                    />
-                    <TextInput
-                        placeholder="Apellido M."
-                        style={styles.input}
-                        value={formData.apellido_m}
-                        onChangeText={(text) => setFormData({ ...formData, apellido_m: text })}
-                    />
-                    <TextInput
-                        placeholder="Dirección"
-                        style={styles.input}
-                        value={formData.direccion}
-                        onChangeText={(text) => setFormData({ ...formData, direccion: text })}
-                    />
-                    <View style={styles.buttonGroup}>
-                        <TouchableOpacity style={styles.button} onPress={handleCreate}>
-                            <Text style={styles.buttonText}>Crear</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.button} onPress={handleUpdate}>
-                            <Text style={styles.buttonText}>Actualizar</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
-                            <Text style={styles.buttonText}>Eliminar</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                <TouchableOpacity style={styles.button} onPress={() => handleShowModal('create')}>
+                    <Text style={styles.buttonText}>Nuevo Cliente</Text>
+                </TouchableOpacity>
 
                 <Text style={styles.sectionTitle}>Lista de Clientes</Text>
-                <View style={[styles.section, styles.tableHeader]}>
+                <View style={styles.tableHeader}>
                     <Text style={styles.tableHeaderCell}>ID</Text>
                     <Text style={styles.tableHeaderCell}>Rut</Text>
                     <Text style={styles.tableHeaderCell}>Nombres</Text>
@@ -122,16 +110,7 @@ const Home = () => {
                 </View>
 
                 {users.map(user => (
-                    <TouchableOpacity key={user.id} style={styles.dataRow} onPress={() => {
-                        setSelectedId(user.id);
-                        setFormData({
-                            rut: user.rut,
-                            nombres: user.nombres,
-                            apellido_p: user.apellido_p,
-                            apellido_m: user.apellido_m,
-                            direccion: user.direccion,
-                        });
-                    }}>
+                    <TouchableOpacity key={user.id} style={styles.dataRow} onPress={() => handleShowModal('update', user)}>
                         <Text style={styles.tableData}>{user.id}</Text>
                         <Text style={styles.tableData}>{user.rut}</Text>
                         <Text style={styles.tableData}>{user.nombres}</Text>
@@ -139,10 +118,81 @@ const Home = () => {
                     </TouchableOpacity>
                 ))}
             </ScrollView>
+
+            {Platform.OS !== 'windows' && (
+                <CustomModal
+                    modalVisible={modalVisible}
+                    setModalVisible={setModalVisible}
+                    formData={formData}
+                    setFormData={setFormData}
+                    handleConfirm={handleConfirm}
+                    handleDelete={handleDelete}
+                    action={action}
+                />
+            )}
         </View>
     );
 };
 
+const CustomModal = ({ modalVisible, setModalVisible, formData, setFormData, handleConfirm, handleDelete, action }) => (
+    <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setModalVisible(false)}
+    >
+        <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+                <Text style={styles.sectionTitle}>Formulario de Cliente</Text>
+                <TextInput
+                    placeholder="Rut"
+                    style={styles.input}
+                    value={formData.rut}
+                    onChangeText={(text) => setFormData({ ...formData, rut: text })}
+                />
+                <TextInput
+                    placeholder="Nombres"
+                    style={styles.input}
+                    value={formData.nombres}
+                    onChangeText={(text) => setFormData({ ...formData, nombres: text })}
+                />
+                <TextInput
+                    placeholder="Apellido P."
+                    style={styles.input}
+                    value={formData.apellido_p}
+                    onChangeText={(text) => setFormData({ ...formData, apellido_p: text })}
+                />
+                <TextInput
+                    placeholder="Apellido M."
+                    style={styles.input}
+                    value={formData.apellido_m}
+                    onChangeText={(text) => setFormData({ ...formData, apellido_m: text })}
+                />
+                <TextInput
+                    placeholder="Dirección"
+                    style={styles.input}
+                    value={formData.direccion}
+                    onChangeText={(text) => setFormData({ ...formData, direccion: text })}
+                />
+                <View style={styles.buttonGroup}>
+                    <TouchableOpacity style={styles.button} onPress={handleConfirm}>
+                        <Text style={styles.buttonText}>
+                            {action === 'create' ? 'Crear' : 'Actualizar'}
+                        </Text>
+                    </TouchableOpacity>
+                    {action === 'update' && (
+                        <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
+                            <Text style={styles.buttonText}>Eliminar</Text>
+                        </TouchableOpacity>
+                    )}
+                    <TouchableOpacity style={styles.button} onPress={() => setModalVisible(false)}>
+                        <Text style={styles.buttonText}>Cancelar</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </View>
+    </Modal>
+);
 
 const styles = StyleSheet.create({
     container: {
@@ -152,16 +202,6 @@ const styles = StyleSheet.create({
     main: {
         flex: 1,
         padding: 15,
-    },
-    formSection: {
-        marginBottom: 20,
-        backgroundColor: '#E9ECEF',
-        padding: 15,
-        borderRadius: 8,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
     },
     sectionTitle: {
         fontSize: 20,
@@ -188,7 +228,6 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 15,
         borderRadius: 5,
-        marginHorizontal: 5,
     },
     deleteButton: {
         backgroundColor: '#DC3545',
@@ -223,6 +262,28 @@ const styles = StyleSheet.create({
         flex: 1,
         textAlign: 'center',
         color: '#495057',
+    },
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        width: '80%',
+        padding: 20,
+        backgroundColor: '#E9ECEF',
+        borderRadius: 8,
     },
 });
 

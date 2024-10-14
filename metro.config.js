@@ -7,7 +7,7 @@ const rnwPath = fs.realpathSync(
     path.resolve(require.resolve('react-native-windows/package.json'), '..'),
 );
 
-// Configuración de Metro para manejar SVGs como código fuente
+// ConfiguraciÃ³n de Metro para manejar SVGs como cÃ³digo fuente
 const config = {
     resolver: {
         blockList: exclusionList([
