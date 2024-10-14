@@ -16,9 +16,9 @@ function App() {
                 initialRouteName="Welcome"
                 screenOptions={{
                     headerStyle: {
-                        backgroundColor: Platform.OS === 'windows' ? 'blue' : 'gray',
+                        backgroundColor: 'gray',
                     },
-                    headerTintColor: Platform.OS === 'windows' ? 'white' : 'black',
+                    headerTintColor: 'white',
                     headerTitleStyle: {
                         fontWeight: Platform.OS === 'windows' ? 'bold' : 'normal',
                     },

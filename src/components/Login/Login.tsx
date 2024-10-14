@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, Alert, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, Alert } from 'react-native';
+import MicrosoftLogo from '../../assets/img/microsoft.svg';
+import User from '../../assets/img/user.svg';
+import Key from '../../assets/img/key.svg';
 import { loginUser } from "../../utils/api";
+
 
 
 const Login = ({ navigation }: { navigation: any }) => {
@@ -38,7 +42,7 @@ const Login = ({ navigation }: { navigation: any }) => {
             <View style={styles.container}>
                 {Platform.OS === 'windows' && (
                     <View style={styles.leftPanel}>
-                        <Image source={require('../../assets/microsoft.svg')} style={styles.logo} />
+                        <MicrosoftLogo style={styles.logo} />
                         <Text style={styles.companyName}>Ilis Solutions</Text>
                         <Text style={styles.mission}>
                             Nuestra misión es transformar ideas en soluciones tecnológicas innovadoras, ofreciendo productos de software de alta calidad que optimicen procesos, impulsen el crecimiento de nuestros clientes y mejoren la experiencia del usuario final.
@@ -50,7 +54,7 @@ const Login = ({ navigation }: { navigation: any }) => {
                 <Text style={styles.companySubtitle}>IlisSolutions</Text>
                 <Text style={styles.loginTitle}>Login</Text>
                 <View style={styles.inputContainer}>
-                    <Image source={require('../../assets/user.svg')} style={styles.inputIcon} />
+                    <User style={styles.inputIcon} />
                     <TextInput
                         style={[styles.input, isUsernameFocused ? styles.inputFocused : null]}
                         placeholder="Username"
@@ -62,7 +66,7 @@ const Login = ({ navigation }: { navigation: any }) => {
                     />
                 </View>
                 <View style={styles.inputContainer}>
-                    <Image source={require('../../assets/key.svg')} style={styles.inputIcon} />
+                    <Key style={styles.inputIcon} />
                     <TextInput
                         style={[styles.input, isPasswordFocused ? styles.inputFocused : null]}
                         placeholder="Password"
