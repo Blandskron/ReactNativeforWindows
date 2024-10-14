@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, Alert, Image } from 'react-native';
+import { registerUser } from "../../utils/api";
+
 
 const Register = ({ navigation }: { navigation: any }) => {
     const [username, setUsername] = useState('');
@@ -10,27 +12,19 @@ const Register = ({ navigation }: { navigation: any }) => {
     const [isEmailFocused, setIsEmailFocused] = useState(false);
 
     const handleRegister = async () => {
-        // Verifica si los campos están vacíos
+
         if (!username || !password || !email) {
             Alert.alert('Error', 'Por favor llena todos los campos.');
             return;
         }
 
         try {
-            // Hacer la solicitud POST al endpoint de registro
-            const response = await fetch('http://127.0.0.1:8000/api/register/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password, email }),
-            });
 
-            // Verificar si la respuesta es exitosa
+            const response = await registerUser(username, password, email);
+
             if (response.ok) {
                 const data = await response.json();
                 Alert.alert('Éxito', data.message || 'Usuario registrado exitosamente');
-                // Navegar a la pantalla de login o a otra pantalla
                 navigation.navigate('Login');
             } else {
                 const errorData = await response.json();
@@ -44,13 +38,15 @@ const Register = ({ navigation }: { navigation: any }) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.leftPanel}>
-                <Image source={require('../../assets/microsoft.svg')} style={styles.logo} />
-                <Text style={styles.companyName}>Ilis Solutions</Text>
-                <Text style={styles.mission}>
-                    Únete a nuestra comunidad de soluciones tecnológicas, registrándote hoy mismo.
-                </Text>
-            </View>
+            {Platform.OS === 'windows' && (
+                <View style={styles.leftPanel}>
+                    <Image source={require('../../assets/microsoft.svg')} style={styles.logo} />
+                    <Text style={styles.companyName}>Ilis Solutions</Text>
+                    <Text style={styles.mission}>
+                        Nuestra misión es transformar ideas en soluciones tecnológicas innovadoras, ofreciendo productos de software de alta calidad que optimicen procesos, impulsen el crecimiento de nuestros clientes y mejoren la experiencia del usuario final.
+                    </Text>
+                </View>
+            )}
             <View style={styles.rightPanel}>
                 <Text style={styles.welcomeTitle}>Create Account</Text>
                 <Text style={styles.companySubtitle}>Join Our Community</Text>

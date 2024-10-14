@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, Alert, Image } from 'react-native';
+import { loginUser } from "../../utils/api";
+
 
 const Login = ({ navigation }: { navigation: any }) => {
     const [username, setUsername] = useState('');
@@ -8,28 +10,19 @@ const Login = ({ navigation }: { navigation: any }) => {
     const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
     const handleLogin = async () => {
-        // Verifica si los campos están vacíos
+
         if (!username || !password) {
             Alert.alert('Error', 'Por favor ingresa tu nombre de usuario y contraseña.');
             return;
         }
 
         try {
-            // Hacer la solicitud POST al endpoint de login
-            const response = await fetch('http://127.0.0.1:8000/api/login/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password }),
-            });
+ 
+            const response = await loginUser(username, password);
 
-            // Verificar si la respuesta es exitosa
             if (response.ok) {
                 const data = await response.json();
-                // Puedes almacenar el token en un contexto o almacenamiento local si es necesario
                 console.log('Login exitoso, token:', data.token);
-                // Navegar a la pantalla principal
                 navigation.navigate('Home');
             } else {
                 const errorData = await response.json();
@@ -40,16 +33,18 @@ const Login = ({ navigation }: { navigation: any }) => {
             Alert.alert('Error', 'Hubo un problema al iniciar sesión. Intenta de nuevo.');
         }
     };
-
+  
     return (
-        <View style={styles.container}>
-            <View style={styles.leftPanel}>
-                <Image source={require('../../assets/microsoft.svg')} style={styles.logo} />
-                <Text style={styles.companyName}>Ilis Solutions</Text>
-                <Text style={styles.mission}>
-                    Nuestra misión es transformar ideas en soluciones tecnológicas innovadoras, ofreciendo productos de software de alta calidad que optimicen procesos, impulsen el crecimiento de nuestros clientes y mejoren la experiencia del usuario final.
-                </Text>
-            </View>
+            <View style={styles.container}>
+                {Platform.OS === 'windows' && (
+                    <View style={styles.leftPanel}>
+                        <Image source={require('../../assets/microsoft.svg')} style={styles.logo} />
+                        <Text style={styles.companyName}>Ilis Solutions</Text>
+                        <Text style={styles.mission}>
+                            Nuestra misión es transformar ideas en soluciones tecnológicas innovadoras, ofreciendo productos de software de alta calidad que optimicen procesos, impulsen el crecimiento de nuestros clientes y mejoren la experiencia del usuario final.
+                        </Text>
+                    </View>
+                )}
             <View style={styles.rightPanel}>
                 <Text style={styles.welcomeTitle}>Welcome</Text>
                 <Text style={styles.companySubtitle}>IlisSolutions</Text>

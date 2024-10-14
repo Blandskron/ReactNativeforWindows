@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { fetchUsers, createUser, updateUser, deleteUser } from '../../utils/api';
+
 
 const Home = () => {
     const [formData, setFormData] = useState({
@@ -13,82 +15,61 @@ const Home = () => {
     const [users, setUsers] = useState([]);
     const [selectedId, setSelectedId] = useState('');
 
-    const fetchUsers = async () => {
+    useEffect(() => {
+        loadUsers();
+    }, []);
+
+    const loadUsers = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:8000/clientes/');
-            const data = await response.json();
+            const data = await fetchUsers();
             setUsers(data);
         } catch (error) {
-            console.error('Error fetching users:', error);
+            console.error('Error loading users:', error);
         }
     };
 
     const handleCreate = async () => {
         try {
-            await fetch('http://127.0.0.1:8000/clientes/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-            setFormData({ rut: '', nombres: '', apellido_p: '', apellido_m: '', direccion: '' });
-            fetchUsers();
+            await createUser(formData);
+            clearForm();
+            loadUsers();
         } catch (error) {
             console.error('Error creating user:', error);
-        }
-    };
-
-    const handleDelete = async () => {
-        try {
-            await fetch(`http://127.0.0.1:8000/clientes/${selectedId}/`, {
-                method: 'DELETE',
-            });
-            setSelectedId('');
-            fetchUsers();
-        } catch (error) {
-            console.error('Error deleting user:', error);
         }
     };
 
     const handleUpdate = async () => {
         if (selectedId) {
             try {
-                const response = await fetch(`http://127.0.0.1:8000/clientes/${selectedId}/`);
-                const user = await response.json();
-                setFormData(user);
+                await updateUser(selectedId, formData);
+                clearForm();
+                loadUsers();
             } catch (error) {
-                console.error('Error fetching user:', error);
+                console.error('Error updating user:', error);
             }
         }
     };
 
-    useEffect(() => {
-        fetchUsers();
-    }, []);
+    const handleDelete = async () => {
+        try {
+            await deleteUser(selectedId);
+            clearForm();
+            loadUsers();
+        } catch (error) {
+            console.error('Error deleting user:', error);
+        }
+    };
+
+    const clearForm = () => {
+        setFormData({ rut: '', nombres: '', apellido_p: '', apellido_m: '', direccion: '' });
+        setSelectedId('');
+    };
 
     return (
         <View style={styles.container}>
-
-            <View style={styles.header}>
-                <Text style={styles.navItem}>Home</Text>
-                <Text style={styles.navItem}>Operaciones</Text>
-                <Text style={styles.navItem}>Procesos</Text>
-                <Text style={styles.navItem}>Consultas</Text>
-                <Text style={styles.navItem}>Informes</Text>
-                <Text style={styles.navItem}>Ajustes</Text>
-            </View>
-
-            <View style={styles.sidebar}>
-                <Button title="Create" color="#007BFF" onPress={handleCreate} />
-                <Button title="Update" color="#007BFF" onPress={handleUpdate} />
-                <Button title="Delete" color="#DC3545" onPress={handleDelete} />
-                <Button title="Read" color="#6C757D" onPress={fetchUsers} />
-            </View>
-
-            <View style={styles.main}>
-
-                <View style={styles.section}>
+            <ScrollView style={styles.main}>
+                <View style={styles.formSection}>
+                    <Text style={styles.sectionTitle}>Formulario de Cliente</Text>
                     <TextInput
                         placeholder="Rut"
                         style={styles.input}
@@ -119,82 +100,60 @@ const Home = () => {
                         value={formData.direccion}
                         onChangeText={(text) => setFormData({ ...formData, direccion: text })}
                     />
-                </View>
-
-                <View style={styles.section}>
-                    <TextInput
-                        placeholder="ID Cliente"
-                        style={styles.input}
-                        value={selectedId}
-                        onChangeText={setSelectedId}
-                    />
                     <View style={styles.buttonGroup}>
-                        <Button title="Ejecutar" color="#28A745" onPress={handleCreate} />
-                        <Button title="Eliminar" color="#DC3545" onPress={handleDelete} />
+                        <TouchableOpacity style={styles.button} onPress={handleCreate}>
+                            <Text style={styles.buttonText}>Crear</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+                            <Text style={styles.buttonText}>Actualizar</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
+                            <Text style={styles.buttonText}>Eliminar</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
 
                 <Text style={styles.sectionTitle}>Lista de Clientes</Text>
                 <View style={[styles.section, styles.tableHeader]}>
+                    <Text style={styles.tableHeaderCell}>ID</Text>
                     <Text style={styles.tableHeaderCell}>Rut</Text>
                     <Text style={styles.tableHeaderCell}>Nombres</Text>
                     <Text style={styles.tableHeaderCell}>Apellido P.</Text>
-                    <Text style={styles.tableHeaderCell}>Apellido M.</Text>
-                    <Text style={styles.tableHeaderCell}>Dirección</Text>
                 </View>
-                <View style={styles.section}>
-                    {users.map(user => (
-                        <View style={styles.dataRow} key={user.id}>
-                            <Text style={styles.tableData}>{user.rut}</Text>
-                            <Text style={styles.tableData}>{user.nombres}</Text>
-                            <Text style={styles.tableData}>{user.apellido_p}</Text>
-                            <Text style={styles.tableData}>{user.apellido_m}</Text>
-                            <Text style={styles.tableData}>{user.direccion}</Text>
-                        </View>
-                    ))}
-                </View>
-            </View>
+
+                {users.map(user => (
+                    <TouchableOpacity key={user.id} style={styles.dataRow} onPress={() => {
+                        setSelectedId(user.id);
+                        setFormData({
+                            rut: user.rut,
+                            nombres: user.nombres,
+                            apellido_p: user.apellido_p,
+                            apellido_m: user.apellido_m,
+                            direccion: user.direccion,
+                        });
+                    }}>
+                        <Text style={styles.tableData}>{user.id}</Text>
+                        <Text style={styles.tableData}>{user.rut}</Text>
+                        <Text style={styles.tableData}>{user.nombres}</Text>
+                        <Text style={styles.tableData}>{user.apellido_p}</Text>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
         </View>
     );
 };
 
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: 'column',
         backgroundColor: '#F8F9FA',
     },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        padding: 15,
-        backgroundColor: '#343A40',
-    },
-    navItem: {
-        fontSize: 18,
-        color: '#FFFFFF',
-    },
-    sidebar: {
-        position: 'absolute',
-        top: 60,
-        left: 0,
-        width: 120,
-        padding: 10,
-        backgroundColor: '#FFFFFF',
-        zIndex: 1,
-        elevation: 1,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
-    },
     main: {
-        marginLeft: 130,
-        marginTop: 60,
-        padding: 10,
-        flexDirection: 'column',
+        flex: 1,
+        padding: 15,
     },
-    section: {
+    formSection: {
         marginBottom: 20,
         backgroundColor: '#E9ECEF',
         padding: 15,
@@ -204,29 +163,45 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 3,
     },
+    sectionTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        color: '#343A40',
+    },
     input: {
         borderWidth: 1,
         borderColor: '#CED4DA',
         marginBottom: 10,
-        padding: 8,
+        padding: 10,
         borderRadius: 4,
         backgroundColor: '#FFFFFF',
         color: '#343A40',
     },
     buttonGroup: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 10,
+        justifyContent: 'space-around',
+        marginVertical: 10,
     },
-    dataRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        paddingVertical: 5,
+    button: {
+        backgroundColor: '#007BFF',
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderRadius: 5,
+        marginHorizontal: 5,
+    },
+    deleteButton: {
+        backgroundColor: '#DC3545',
+    },
+    buttonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
     tableHeader: {
         flexDirection: 'row',
         justifyContent: 'space-evenly',
-        paddingVertical: 5,
+        paddingVertical: 8,
         backgroundColor: '#007BFF',
         borderRadius: 4,
     },
@@ -236,15 +211,17 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#FFFFFF',
     },
+    dataRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        paddingVertical: 5,
+        borderBottomWidth: 1,
+        borderBottomColor: '#CED4DA',
+        backgroundColor: '#FFFFFF',
+    },
     tableData: {
         flex: 1,
         textAlign: 'center',
-        color: '#495057',
-    },
-    sectionTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 5,
         color: '#495057',
     },
 });
